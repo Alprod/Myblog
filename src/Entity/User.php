@@ -2,6 +2,11 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,6 +15,15 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
+#[ApiResource(
+	operations: [
+		new Get( uriTemplate: '/users', name: 'api_users' ),
+		new Post( uriTemplate : '/register/users', name : 'api_users_register' ),
+		new Get( uriTemplate: '/users/{id}', name: 'api_users_id'),
+		new Put(uriTemplate: '/update/users/{id}', name: 'api_update_users'),
+		new Delete(uriTemplate: '/delete/users/{id}', name: 'api_delete_users')
+	]
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
