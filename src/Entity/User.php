@@ -3,35 +3,27 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[ApiResource(
-	operations: [
-		new Get( uriTemplate: '/users', name: 'api_users' ),
-		new Post( uriTemplate : '/register/users', name : 'api_users_register' ),
-		new Get( uriTemplate: '/users/{id}', name: 'api_users_id'),
-		new Put(uriTemplate: '/update/users/{id}', name: 'api_update_users'),
-		new Delete(uriTemplate: '/delete/users/{id}', name: 'api_delete_users')
-	]
-)]
+#[ApiResource]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups(['read'])]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -44,21 +36,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read'])]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Groups(['read'])]
     private ?string $pseudo = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['read'])]
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['read'])]
     private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read'])]
     private ?string $avatar = null;
 
     public function getId(): ?int
@@ -203,6 +201,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+	#[Groups(['read'])]
 	public function getFullname(): string
 	{
 		return $this->getFirstname().' '.$this->getLastname();
