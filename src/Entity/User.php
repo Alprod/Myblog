@@ -3,7 +3,12 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,17 +18,43 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[ApiResource]
+#[ApiResource(
+	operations: [
+		new GetCollection(
+			uriTemplate: '/all/users',
+			normalizationContext: ['groups' => 'all'],
+			name: 'api-all-users'),
+		new Get(
+			uriTemplate: '/details/users/{id}',
+			requirements: ['id' => '\d+'],
+			normalizationContext : [ 'groups' => 'details'],
+			name : 'api-details-users'),
+		new Post(
+			uriTemplate : '/register/users',
+			normalizationContext : [ 'groups' => 'register'],
+			name : 'api-register-users' ),
+		new Patch(
+			uriTemplate: '/update/users/{id}',
+			requirements: ['id' => '\d+'],
+			normalizationContext: ['groups' => 'update'],
+			name: 'api-update-user'),
+		new Delete(
+			uriTemplate: '/delete/users/{id}',
+			requirements: ['id' => '\d+'],
+			normalizationContext: ['groups' => 'delete'],
+			name: 'api-delete-user')
+	]
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read'])]
+    #[Groups(['details', 'all', 'delete'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(['read'])]
+    #[Groups(['register','details', 'update', 'all'])]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -33,30 +64,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Groups(['register','update'])]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read'])]
+    #[Groups(['register','details', 'update', 'all'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read'])]
+    #[Groups(['register','details', 'update', 'all'])]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    #[Groups(['read'])]
+    #[Groups(['register','details', 'update'])]
     private ?string $pseudo = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['read'])]
+    #[Groups(['register','details'])]
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Groups(['read'])]
+    #[Groups(['details', 'update'])]
     private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read'])]
+    #[Groups(['register', 'details', 'update'])]
     private ?string $avatar = null;
 
     public function getId(): ?int
@@ -201,7 +233,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-	#[Groups(['read'])]
+	#[Groups(['details', 'all'])]
 	public function getFullname(): string
 	{
 		return $this->getFirstname().' '.$this->getLastname();
