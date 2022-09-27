@@ -8,7 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
+use App\Controller\RegisterUserController;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -31,6 +31,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 			name : 'api-details-users'),
 		new Post(
 			uriTemplate : '/register/users',
+			controller: RegisterUserController::class,
 			normalizationContext : [ 'groups' => 'register'],
 			name : 'api-register-users' ),
 		new Patch(
