@@ -1,0 +1,10 @@
+@import "fonts.css";
+
+body {
+    background-color: rgba(16, 38, 60, 0.78);
+    font-family: Maven-pro_body, sans-serif;
+}
+h1,h2,h3,h4,h4 {
+    color: #f2f2f2;
+    font-family: Montserrat-SemiBold, sans-serif;
+}

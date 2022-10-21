@@ -8,8 +8,11 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
+use App\Controller\RegisterUserController;
 use App\Repository\UserRepository;
+use App\State\UserStateProvider;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -20,41 +23,48 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\HasLifecycleCallbacks]
 #[ApiResource(
 	operations: [
-		new GetCollection(
-			uriTemplate: '/all/users',
-			normalizationContext: ['groups' => 'all'],
-			name: 'api-all-users'),
-		new Get(
-			uriTemplate: '/details/users/{id}',
-			requirements: ['id' => '\d+'],
-			normalizationContext : [ 'groups' => 'details'],
-			name : 'api-details-users'),
-		new Post(
-			uriTemplate : '/register/users',
-			normalizationContext : [ 'groups' => 'register'],
-			name : 'api-register-users' ),
-		new Patch(
-			uriTemplate: '/update/users/{id}',
-			requirements: ['id' => '\d+'],
-			normalizationContext: ['groups' => 'update'],
-			name: 'api-update-user'),
-		new Delete(
-			uriTemplate: '/delete/users/{id}',
-			requirements: ['id' => '\d+'],
-			normalizationContext: ['groups' => 'delete'],
-			name: 'api-delete-user')
-	]
+            new GetCollection(
+                uriTemplate: '/users/all',
+                normalizationContext: ['groups' => 'all'],
+                name: 'api-all-users'),
+            new Get(
+                uriTemplate : '/users/{id}/details',
+                requirements : [ 'id' => '\d+'],
+                normalizationContext : [ 'groups' => 'details'],
+                name : 'api-details-users'),
+            new Post(
+                uriTemplate: '/users/register',
+                controller: RegisterUserController::class,
+                denormalizationContext: [ 'groups' => 'register'],
+                name: 'api-register-users' ),
+            new Patch(
+                uriTemplate: '/users/{id}/update',
+                requirements: ['id' => '\d+'],
+                denormalizationContext: ['groups' => 'update'],
+                name: 'api-update-user'),
+            new Delete(
+                uriTemplate: '/users/{id}/delete',
+                requirements: ['id' => '\d+'],
+                normalizationContext: ['groups' => 'delete'],
+                name: 'api-delete-user')
+        ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['details', 'all', 'delete'])]
+    #[Groups(['details',
+              'all',
+              'delete',
+              'add_new_articles'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(['register','details', 'update', 'all'])]
+    #[Groups(['register',
+              'details',
+              'update',
+              'all'])]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -76,11 +86,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $lastname = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    #[Groups(['register','details', 'update'])]
+    #[Groups(['register','details', 'update','all'])]
     private ?string $pseudo = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['register','details'])]
+    #[Groups(['register','details','all'])]
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -88,8 +98,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['register', 'details', 'update'])]
+    #[Groups(['register', 'details', 'update','all'])]
     private ?string $avatar = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Articles::class)]
+    #[Groups(['all', 'details'])]
+    private Collection $articles;
+
+    public function __construct()
+    {
+        $this->articles = new ArrayCollection();
+    }
+
 
     public function getId(): ?int
     {
@@ -233,15 +253,45 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-	#[Groups(['details', 'all'])]
-	public function getFullname(): string
-	{
-		return $this->getFirstname().' '.$this->getLastname();
-	}
+	#[Groups(['details', 'all', 'all_articles','details_article'])]
+    public function getFullname(): string
+    {
+        return $this->getFirstname().' '.$this->getLastname();
+    }
 
 	#[ORM\PrePersist]
-	public function setCreatedAtValue(): void
-	{
-		$this->createdAt = new \DateTime('now');
-	}
+    public function setCreatedAtValue(): void
+    {
+        $this->createdAt = new \DateTime('now');
+    }
+
+    /**
+     * @return Collection<int, Articles>
+     */
+    public function getArticles(): Collection
+    {
+        return $this->articles;
+    }
+
+    public function addArticle(Articles $article): self
+    {
+        if (!$this->articles->contains($article)) {
+            $this->articles->add($article);
+            $article->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArticle(Articles $article): self
+    {
+        if ($this->articles->removeElement($article)) {
+            // set the owning side to null (unless already changed)
+            if ($article->getUser() === $this) {
+                $article->setUser(null);
+            }
+        }
+
+        return $this;
+    }
 }
