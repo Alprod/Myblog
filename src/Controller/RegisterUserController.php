@@ -11,9 +11,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RegisterUserController extends AbstractController
 {
-	public function __construct(private UsersService $users) {}
+	public function __construct(private readonly UsersService $users) {}
 
-	public function __invoke(User $data ,Request $request)
+	public function __invoke(User $data ,Request $request): User
 	{
 		$this->users->addUsers($data, $request);
 		return $data;
