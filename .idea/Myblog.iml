@@ -134,7 +134,6 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/event-dispatcher" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/cache" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/composer" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/fig/link-util" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/api-platform/core" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/nelmio/cors-bundle" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/willdurand/negotiation" />
