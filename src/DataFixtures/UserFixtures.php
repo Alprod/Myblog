@@ -17,7 +17,8 @@ class UserFixtures extends BaseFixtures
 
 	protected function loadData( ObjectManager $manager ) {
 		$this->createMany(User::class, 8, function (User $user, $index) {
-			$pass = $this->hasher->hashPassword($user, 'password');
+			$user->setPlainText('Password_1');
+			$pass = $this->hasher->hashPassword($user, $user->getPlainText());
 			$user->setFirstname($this->faker->firstName)
 				->setLastname($this->faker->lastName)
 				->setPseudo($this->faker->name)

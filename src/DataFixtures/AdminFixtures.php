@@ -22,7 +22,8 @@ class AdminFixtures extends Fixture
 	public function load( ObjectManager $manager )
 	{
 		$admin = new User();
-		$pass = $this->hasher->hashPassword($admin, 'admin');
+		$admin->setPlainText('Admin_001');
+		$pass = $this->hasher->hashPassword($admin, $admin->getPlainText());
 
 		$admin->setFirstname('admin')
 			->setLastname('user')
