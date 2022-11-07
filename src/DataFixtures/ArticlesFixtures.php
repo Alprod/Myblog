@@ -23,7 +23,7 @@ class ArticlesFixtures extends BaseFixtures implements DependentFixtureInterface
 				->setIsPublic($this->faker->boolean(50))
 				->setCreatedAt($immutDate)
 				->setUser($this->getRandomReference(User::class));
-			$this->setReference('articles_'.$index);
+			$this->setReference('articles_'.$index, $articles);
 		});
 		$manager->flush();
 	}

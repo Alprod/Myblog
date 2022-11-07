@@ -18,27 +18,28 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ArticlesRepository::class)]
 #[ApiResource(
+    routePrefix: '/article',
 	operations: [
         new GetCollection(
-            uriTemplate: '/articles/all',
+            uriTemplate: '/all',
             normalizationContext: ['groups' => 'all_articles'],
             name: 'api-all-articles'),
         new Get(
-            uriTemplate : '/articles/{id}/details_article',
+            uriTemplate : '/{id}/details_article',
             requirements : [ 'id' => '\d+'],
             normalizationContext : [ 'groups' => 'details_article'],
             name : 'api-details-article'),
         new Post(
-            uriTemplate: '/articles/new',
+            uriTemplate: '/new',
             denormalizationContext: [ 'groups' => 'add_new_articles'],
             name: 'api-register-articles' ),
         new Patch(
-            uriTemplate: '/articles/{id}/edit',
+            uriTemplate: '/{id}/edit',
             requirements: ['id' => '\d+'],
             denormalizationContext: ['groups' => 'update_articles'],
             name: 'api-update-articles'),
         new Delete(
-            uriTemplate: '/articles/{id}/delete',
+            uriTemplate: '/{id}/delete',
             requirements: ['id' => '\d+'],
             normalizationContext: ['groups' => 'delete_articles'],
             name: 'api-delete-articles')

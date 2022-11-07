@@ -1,10 +1,157 @@
 @import "fonts.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 body {
-    background-color: rgba(16, 38, 60, 0.78);
+    background-color: #FFFFFF;
     font-family: Maven-pro_body, sans-serif;
 }
-h1,h2,h3,h4,h4 {
+h1,h2,h3,h4,h5,h6 {
     color: #f2f2f2;
     font-family: Montserrat-SemiBold, sans-serif;
+}
+
+@layer components {
+    .t1 {
+        @apply
+            text-5xl
+            p-5
+            antialiased
+            text-slate-800
+            dark:text-gray-200
+            sm:text-7xl
+    }
+    .t2 {
+        @apply
+            text-4xl
+            p-5
+            antialiased
+            text-slate-800
+            dark:text-gray-200
+            sm:text-5xl
+    }
+    .t3 {
+        @apply
+            text-3xl
+            p-5
+            antialiased
+            text-slate-800
+            dark:text-gray-200
+            sm:text-4xl
+    }
+    .t4 {
+        @apply
+            text-2xl
+            p-5
+            antialiased
+            text-slate-800
+            dark:text-gray-200
+            sm:text-3xl
+    }
+    .t5 {
+        @apply
+            text-xl
+            p-5
+            antialiased
+            text-slate-800
+            dark:text-gray-200
+            sm:text-2xl
+    }
+    .t6 {
+        @apply
+            text-lg
+            p-5
+            antialiased
+            text-slate-800
+            dark:text-gray-200
+            sm:text-xl
+    }
+    .content {
+        @apply
+            px-5
+            text-base
+            dark:text-gray-200
+    }
+    .btn-green{
+        @apply
+            w-full
+            inline-flex
+            justify-center
+            rounded-md
+            border
+            border-emerald-600
+            shadow-sm
+            px-4
+            py-2
+            bg-emerald-600
+            text-sm
+            font-medium
+            text-white
+            dark:border-transparent
+            dark:bg-emerald-700
+            dark:hover:bg-emerald-800
+            dark:focus:ring-emerald-900
+            hover:bg-emerald-700
+            focus:outline-none
+            focus:ring-2
+            focus:ring-offset-2
+            focus:ring-emerald-500
+            sm:col-start-1
+            sm:text-base
+    }
+    .btn-blue{
+        @apply
+            w-full
+            inline-flex
+            justify-center
+            rounded-md
+            border
+            border-sky-500
+            shadow-sm
+            px-4
+            py-2
+            bg-sky-500
+            text-sm
+            font-medium
+            text-white
+            dark:border-transparent
+            dark:bg-sky-700
+            dark:hover:bg-sky-800
+            dark:focus:ring-sky-900
+            hover:bg-sky-700
+            focus:outline-none
+            focus:ring-2
+            focus:ring-offset-2
+            focus:ring-sky-500
+            sm:col-start-1
+            sm:text-base
+    }
+    .btn-red {
+        @apply
+            w-full
+            inline-flex
+            justify-center
+            px-4
+            py-2
+            border
+            border-red-600
+            shadow-sm
+            text-sm
+            font-medium
+            rounded-md
+            text-white
+            bg-red-600
+            dark:bg-red-700
+            dark:border-transparent
+            dark:hover:bg-red-800
+            dark:focus:ring-red-900
+            hover:bg-red-700
+            focus:outline-none
+            focus:ring-2
+            focus:ring-offset-2
+            focus:ring-red-500
+            sm:text-base
+            sm:col-start-1
+    }
 }

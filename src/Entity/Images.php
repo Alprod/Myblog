@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\ImagesRepository;
 use Doctrine\DBAL\Types\Types;
@@ -13,22 +14,29 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ImagesRepository::class)]
 #[ApiResource(
+    routePrefix: '/image',
 	operations: [
 		new GetCollection(
-			uriTemplate: '/images/all',
+			uriTemplate: '/all',
 			normalizationContext: ['groups'=>'all_images'],
-			name: 'api-all-images'),
+			name: 'api-all-images'
+        ),
 		new Get(
-			uriTemplate: '/images/{id}/details_image',
+			uriTemplate: '/{id}/details_image',
 			requirements: [ 'id' => '\d+' ],
 			normalizationContext: ['groups' => 'details_image'],
 			name: 'api-details-image'
 		),
 		new Post(
-			uriTemplate: '/images/new',
+			uriTemplate: '/new',
 			denormalizationContext: ['groups' => 'add_new_images'],
 			name: 'api-add-new'
-		)
+        ),
+        new Patch(
+            uriTemplate: '{id}/update',
+            denormalizationContext: ['groups' => 'update_image'],
+            name: 'api-update-image'
+        )
 	]
 )]
 class Images
@@ -43,6 +51,7 @@ class Images
     #[Groups([
 		'all_images',
 		'details_image',
+        'update_image',
 		'all_articles',
 		'details_article'])]
     private array $images = [];
@@ -51,6 +60,7 @@ class Images
     #[Groups([
 	    'all_images',
 	    'details_image',
+        'update_image',
 	    'all_articles',
 	    'details_article'])]
     private ?string $name = null;
@@ -66,7 +76,8 @@ class Images
     #[ORM\ManyToOne(inversedBy: 'images')]
     #[Groups([
 	    'all_images',
-	    'details_image'])]
+	    'details_image',
+        'update_image'])]
     private ?Articles $articles = null;
 
     public function getId(): ?int

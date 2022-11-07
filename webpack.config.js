@@ -7,8 +7,8 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
 Encore
     .setOutputPath('public/build/')
     .setPublicPath('/build')
-    .addEntry('app', './assets/react/app.js')
-    .addStyleEntry('style', './assets/styles/app.css')
+    .addEntry('app', './assets/app.js')
+    .addEntry('global', './assets/js/global.js')
 
     .splitEntryChunks()
 
@@ -33,6 +33,7 @@ Encore
 
     // uncomment if you use React
     .enableReactPreset()
+    .enablePostCssLoader()
 
 ;
 

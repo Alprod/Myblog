@@ -10,44 +10,53 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Controller\RegisterUserController;
 use App\Repository\UserRepository;
-use App\State\UserStateProvider;
+use App\Validator\ContainsPassword;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Regex;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ApiResource(
-	operations: [
-            new GetCollection(
-                uriTemplate: '/users/all',
-                normalizationContext: ['groups' => 'all'],
-                name: 'api-all-users'),
-            new Get(
-                uriTemplate : '/users/{id}/details',
-                requirements : [ 'id' => '\d+'],
-                normalizationContext : [ 'groups' => 'details'],
-                name : 'api-details-users'),
-            new Post(
-                uriTemplate: '/users/register',
-                controller: RegisterUserController::class,
-                denormalizationContext: [ 'groups' => 'register'],
-                name: 'api-register-users' ),
-            new Patch(
-                uriTemplate: '/users/{id}/update',
-                requirements: ['id' => '\d+'],
-                denormalizationContext: ['groups' => 'update'],
-                name: 'api-update-user'),
-            new Delete(
-                uriTemplate: '/users/{id}/delete',
-                requirements: ['id' => '\d+'],
-                normalizationContext: ['groups' => 'delete'],
-                name: 'api-delete-user')
-        ]
+    operations : [
+		new GetCollection(
+			uriTemplate: '/all',
+			normalizationContext: ['groups' => 'all'],
+			name: 'api-all-users'),
+		new Get(
+			uriTemplate : '/{id}/details',
+			requirements : [ 'id' => '\d+'],
+			normalizationContext : [ 'groups' => 'details'],
+			name : 'api-details-users'),
+		new Post(
+			uriTemplate: '/register',
+			controller : RegisterUserController::class,
+			denormalizationContext : [ 'groups' => 'register'],
+			name : 'api-register-users' ),
+		new Patch(
+			uriTemplate: '/{id}/update',
+			requirements: ['id' => '\d+'],
+			denormalizationContext: ['groups' => 'update'],
+			name: 'api-update-user'),
+		new Delete(
+			uriTemplate: '/{id}/delete',
+			requirements: ['id' => '\d+'],
+			normalizationContext: ['groups' => 'delete'],
+			name: 'api-delete-user')
+			],
+	routePrefix: '/user'
+)]
+#[UniqueEntity(
+	fields: 'email' ,
+	message: 'Désolé mais il semblerait que cette adresse e-mail soit déjà utiliser'
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -61,6 +70,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[NotBlank([
+		'message' => 'Désoler mais {{ label }} doit être indiquer'
+    ])]
+    #[Email( message : '{{ value }} n\'est pas un email valide' )]
     #[Groups(['register',
               'details',
               'update',
@@ -74,8 +87,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Groups(['register','update'])]
-    private ?string $password = null;
+    private string $password;
+
+	#[Regex(
+		pattern: '/^\S*(?=\S{8,})(?=\S*[\W+_])(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/i',
+		message: 'Votre mot passe doit contenir 8 caractères, 1 majuscule, 1 nombre, 1 caractère spécial (exemple : #@&_-?.)',
+		match: true
+	)]
+	#[NotBlank(
+		message: 'Désoler mais vous devez indiquer une valeur'
+	)]
+	#[Groups(['register', 'update'])]
+	private string $plainText;
+
 
     #[ORM\Column(length: 255)]
     #[Groups(['register','details', 'update', 'all'])]
@@ -171,6 +195,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+	/**
+	 * @return string
+	 */
+	public function getPlainText(): string {
+		return $this->plainText;
+	}
+
+	/**
+	 * @param string  $plainText
+	 */
+	public function setPlainText( string $plainText ): void {
+		$this->plainText = $plainText;
+	}
 
     /**
      * @see UserInterface
