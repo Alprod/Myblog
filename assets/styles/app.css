@@ -13,58 +13,41 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 @layer components {
-    .t1 {
+    .t1,.t2,.t3,.t4,.t5,.t6 {
         @apply
-            text-5xl
             p-5
             antialiased
             text-slate-800
             dark:text-gray-200
+    }
+    .t1 {
+        @apply
+            text-5xl
             sm:text-7xl
     }
     .t2 {
         @apply
             text-4xl
-            p-5
-            antialiased
-            text-slate-800
-            dark:text-gray-200
             sm:text-5xl
     }
     .t3 {
         @apply
             text-3xl
-            p-5
-            antialiased
-            text-slate-800
-            dark:text-gray-200
             sm:text-4xl
     }
     .t4 {
         @apply
             text-2xl
-            p-5
-            antialiased
-            text-slate-800
-            dark:text-gray-200
             sm:text-3xl
     }
     .t5 {
         @apply
             text-xl
-            p-5
-            antialiased
-            text-slate-800
-            dark:text-gray-200
             sm:text-2xl
     }
     .t6 {
         @apply
             text-lg
-            p-5
-            antialiased
-            text-slate-800
-            dark:text-gray-200
             sm:text-xl
     }
     .content {
@@ -102,7 +85,7 @@ h1,h2,h3,h4,h5,h6 {
     }
     .btn-blue{
         @apply
-            w-full
+            w-1/3
             inline-flex
             justify-center
             rounded-md
@@ -126,6 +109,7 @@ h1,h2,h3,h4,h5,h6 {
             focus:ring-sky-500
             sm:col-start-1
             sm:text-base
+            sm:w-full
     }
     .btn-red {
         @apply

@@ -2,14 +2,9 @@
 
 {% block title %}Articles{% endblock %}
 {% block body %}
-    <h1>Retrouvez toute mes articles</h1>
-    <ul>
-        {% for article in articles %}
-            <li>
-                {{ article.title }}
-            </li>
-        {% endfor %}
-    </ul>
+    <section class="container px-3 sm:px-0 mx-auto">
+        <div id="show-articles" data-image="{{ asset('images/forestwood.jpg') }}" data-url="{{ path('app_detail_article', { id: '__id__' }) }}"></div>
+    </section>
 {% endblock %}
 
 

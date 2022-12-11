@@ -8,7 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use App\Controller\RegisterUserController;
+use App\ApiResource\detailApi_article;
 use App\Repository\ArticlesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -18,32 +18,36 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ArticlesRepository::class)]
 #[ApiResource(
-    routePrefix: '/article',
-	operations: [
-        new GetCollection(
-            uriTemplate: '/all',
-            normalizationContext: ['groups' => 'all_articles'],
-            name: 'api-all-articles'),
-        new Get(
-            uriTemplate : '/{id}/details_article',
-            requirements : [ 'id' => '\d+'],
-            normalizationContext : [ 'groups' => 'details_article'],
-            name : 'api-details-article'),
-        new Post(
-            uriTemplate: '/new',
-            denormalizationContext: [ 'groups' => 'add_new_articles'],
-            name: 'api-register-articles' ),
-        new Patch(
-            uriTemplate: '/{id}/edit',
-            requirements: ['id' => '\d+'],
-            denormalizationContext: ['groups' => 'update_articles'],
-            name: 'api-update-articles'),
-        new Delete(
-            uriTemplate: '/{id}/delete',
-            requirements: ['id' => '\d+'],
-            normalizationContext: ['groups' => 'delete_articles'],
-            name: 'api-delete-articles')
-    ]
+    operations : [
+		new GetCollection(
+			uriTemplate: '/all',
+			normalizationContext: ['groups' => 'all_articles'],
+			name: 'api-all-articles'),
+		new Get(
+			uriTemplate : '/{id}/details_article',
+			controller: detailApi_article::class,
+			normalizationContext : [ 'groups' => 'details_article'],
+			name : 'api-details-article' ),
+		new Post(
+			uriTemplate: '/new',
+			denormalizationContext: [ 'groups' => 'add_new_articles'],
+			name: 'api-register-articles' ),
+		new Patch(
+			uriTemplate: '/{id}/edit',
+			requirements: ['id' => '\d+'],
+			denormalizationContext: ['groups' => 'update_articles'],
+			name: 'api-update-articles'),
+		new Delete(
+			uriTemplate: '/{id}/delete',
+			requirements: ['id' => '\d+'],
+			normalizationContext: ['groups' => 'delete_articles'],
+			name: 'api-delete-articles')
+	],
+	routePrefix : '/article',
+	order : [ 'createdAt' => 'DESC'],
+	paginationClientEnabled : true,
+	paginationEnabled : true,
+	paginationItemsPerPage : 3
 )]
 class Articles
 {
