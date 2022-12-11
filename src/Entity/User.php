@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\ApiResource\RegistrationApi;
 use App\Controller\RegisterUserController;
 use App\Repository\UserRepository;
 use App\Validator\ContainsPassword;
@@ -26,33 +27,35 @@ use Symfony\Component\Validator\Constraints\Regex;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ApiResource(
-    operations : [
-		new GetCollection(
-			uriTemplate: '/all',
-			normalizationContext: ['groups' => 'all'],
-			name: 'api-all-users'),
-		new Get(
-			uriTemplate : '/{id}/details',
-			requirements : [ 'id' => '\d+'],
-			normalizationContext : [ 'groups' => 'details'],
-			name : 'api-details-users'),
-		new Post(
-			uriTemplate: '/register',
-			controller : RegisterUserController::class,
-			denormalizationContext : [ 'groups' => 'register'],
-			name : 'api-register-users' ),
-		new Patch(
-			uriTemplate: '/{id}/update',
-			requirements: ['id' => '\d+'],
-			denormalizationContext: ['groups' => 'update'],
-			name: 'api-update-user'),
-		new Delete(
-			uriTemplate: '/{id}/delete',
-			requirements: ['id' => '\d+'],
-			normalizationContext: ['groups' => 'delete'],
-			name: 'api-delete-user')
-			],
-	routePrefix: '/user'
+	operations : [
+			new GetCollection(
+				uriTemplate: '/all',
+				normalizationContext: ['groups' => 'all'],
+				name: 'api-all-users'),
+			new Get(
+				uriTemplate : '/{id}/details',
+				requirements : [ 'id' => '\d+'],
+				normalizationContext : [ 'groups' => 'details'],
+				name : 'api-details-users'),
+			new Post(
+				uriTemplate: '/register',
+				controller : RegistrationApi::class,
+				denormalizationContext : [ 'groups' => 'register'],
+				name : 'api-register-users' ),
+			new Patch(
+				uriTemplate: '/{id}/update',
+				requirements: ['id' => '\d+'],
+				denormalizationContext: ['groups' => 'update'],
+				name: 'api-update-user'),
+			new Delete(
+				uriTemplate: '/{id}/delete',
+				requirements: ['id' => '\d+'],
+				normalizationContext: ['groups' => 'delete'],
+				name: 'api-delete-user')
+				],
+	routePrefix : '/user',
+	order : ['createdAt' => 'DESC'],
+	paginationItemsPerPage: 6
 )]
 #[UniqueEntity(
 	fields: 'email' ,
@@ -126,7 +129,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $avatar = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Articles::class)]
-    #[Groups(['all', 'details'])]
+    #[Groups(['details'])]
     private Collection $articles;
 
     public function __construct()
